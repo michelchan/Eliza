@@ -79,14 +79,18 @@ http.createServer(app).listen(app.get('port'), function(){
   console.log('Eliza listening on port ' + app.get('port'));
 });
 
-// find response
+// find response using keyword
 function getResponse(msg){
-	var keywords = findMatch(msg);
-	var key = keywords[0];
-	var responses = keywords[1];
+	var matched = findMatch(msg);
+	var key = matched[0];
+	var responses = matched[1];
 
+	// choose random response
 	var random = Math.floor((Math.random() * responses.length));
 	var speechText = responses[random];
+
+	// remove punctuations
+	speechText = speechText.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
 	if (speechText.includes("{0}")){
 		var context = msg.match(key)[1];
 		speechText = speechText.replace("{0}", context);
@@ -94,6 +98,7 @@ function getResponse(msg){
 	return speechText;
 }
 
+// find which responses to use based on regex
 function findMatch(msg){
 	for (k in keywords){
 		if (msg.match(k)){
