@@ -15,7 +15,7 @@ var keywords = {};
 					"What does that make you feel?",
 					"Why?",
 					"What else?",
-					"What about it?"
+					"What about it?",
 					"That sounds interesting.",
 					"Can you tell me more?"
 					];
