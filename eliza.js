@@ -1,6 +1,12 @@
 var keywords = {};
 	var quit = ["Goodbye.", 
-				"Come see me anytime."];
+				"Come see me anytime.",
+				"I'll be here.",
+				"I'll miss you.",
+				"Thanks for stopping by.",
+				"Hope to see you soon.",
+				"Bye.",
+				"Take care."];
 	var inquiry = ["Tell me more.",
 					"Can you elaborate on that?",
 					"Oh, I see.",
@@ -10,6 +16,8 @@ var keywords = {};
 					"Why?",
 					"What else?",
 					"What about it?"
+					"That sounds interesting.",
+					"Can you tell me more?"
 					];
 	var feelings = ["Do you enjoy feeling {0}?",
 					"What is it like to feel {0}?",
@@ -35,11 +43,17 @@ var keywords = {};
 				"What would you do with {0}?",
 				"Would having {0} make you happy?"];
 	var my = ["Your {0}?",
-			"When your {0}, how does that make you feel?"];
+			"When your {0}, how does that make you feel?",
+			"What about {0}?",
+			"How does that make you feel?",
+			"Tell me more."];
 	var hello = ["Hello.",
 				"What would you like to talk about today?",
 				"How are you feeling?",
-				"Tell me about yourself."];
+				"Tell me about yourself.",
+				"What's the problem?",
+				"What worries you?",
+				"Anything you want to discuss?"];
 populateKeywords();
 
 var http = require('http');
@@ -55,8 +69,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 app.post('/eliza/doctor', function(req,res) {
-	var msg = req.body;
-	console.log(req.body);
+	var msg = req.body.human;
 	var response = {};
 	response.eliza = getResponse(msg.toLowerCase())
 	res.send(response);
@@ -68,15 +81,23 @@ http.createServer(app).listen(app.get('port'), function(){
 
 // find response
 function getResponse(msg){
-	var responses = findMatch(msg);
+	var keywords = findMatch(msg);
+	var key = keywords[0];
+	var responses = keywords[1];
+
 	var random = Math.floor((Math.random() * responses.length));
-	return responses[random];
+	var speechText = responses[random];
+	if (speechText.includes("{0}")){
+		var context = msg.match(key)[1];
+		speechText = speechText.replace("{0}", context);
+	}
+	return speechText;
 }
 
 function findMatch(msg){
 	for (k in keywords){
 		if (msg.match(k)){
-			return keywords[k];
+			return [k, keywords[k]];
 		}
 	}
 }
