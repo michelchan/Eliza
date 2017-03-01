@@ -59,7 +59,7 @@ populateKeywords();
 var http = require('http');
 var express = require('express');
 var app = express();
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 8080);
 
 var bodyParser = require('body-parser');
 
@@ -68,7 +68,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-app.post('/eliza/doctor', function(req,res) {
+app.post('/', function(req,res) {
 	var msg = req.body.human;
 	var response = {};
 	response.eliza = getResponse(msg.toLowerCase())
@@ -90,11 +90,11 @@ function getResponse(msg){
 	var speechText = responses[random];
 
 	// remove punctuations
-	speechText = speechText.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
-	if (speechText.includes("{0}")){
-		var context = msg.match(key)[1];
-		speechText = speechText.replace("{0}", context);
+	var context = msg.match(key)[1];
+	if (context){
+		context = context.replace(/[.,\/#!$%\^&\*;:=\-_`~()]/g,"");
 	}
+	speechText = speechText.replace("{0}", context);
 	return speechText;
 }
 
